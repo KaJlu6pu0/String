@@ -4,32 +4,29 @@
 using namespace std;
 
 class String {
-    char* string;
+    char* str;
     int length;
+    static int count;
 
 public:
-    String() {
-        length = 80;
-        string = new char[length + 1];
-        string[0] = '\0';
+    String() : String(80) {}
+
+    String(int size)
+        : length(size), str(new char[size + 1]) {
+        str[0] = '\0';
+        ++count;
     }
 
-    String(int size) {
-        length = size;
-        string = new char[length + 1];
-        string[0] = '\0';
+    String(const char* s)
+        : length(static_cast<int>(strlen(s))), str(new char[length + 1]) {
+        strcpy_s(str, length + 1, s);
+        ++count;
     }
 
-    String(const char* s) {
-        length = static_cast<int>(strlen(s));
-        string = new char[length + 1];
-        strcpy_s(string, length + 1, s);
-    }
-
-    String(const String& other) {
-        length = other.length;
-        string = new char[length + 1];
-        strcpy_s(string, length + 1, other.string);
+    String(const String& other)
+        : length(other.length), str(new char[other.length + 1]) {
+        strcpy_s(str, length + 1, other.str);
+        ++count;
     }
 
     void input() {
@@ -37,39 +34,44 @@ public:
         cout << "Enter string: ";
         cin.getline(buffer, 248);
 
-        delete[] string;
+        delete[] str;
         length = static_cast<int>(strlen(buffer));
-        string = new char[length + 1];
-        strcpy_s(string, length + 1, buffer);
+        str = new char[length + 1];
+        strcpy_s(str, length + 1, buffer);
     }
 
     void output() const {
-        cout << string << endl;
+        cout << str << endl;
+    }
+
+    static int getCount() {
+        return count;
     }
 
     ~String() {
-        delete[] string;
+        delete[] str;
+        --count;
     }
 };
 
+int String::count = 0;
+
 int main() {
     String s1;
-    String s2;
-    String s3;
+    String s2(20);
+    String s3("Hello, world!");
+
+    cout << "s1: "; s1.output();
+    cout << "s2: "; s2.output();
+    cout << "s3: "; s3.output();
+
+    cout << "Objects created: " << String::getCount() << endl;
 
     s1.input();
-    std::cout << "s1: ";
-    s1.output();
-
-    s2.input();
-    std::cout << "s2: ";
-    s2.output();
-
-    s3.input();
-    std::cout << "s3: ";
-    s3.output();
+    cout << "s1 (new): "; s1.output();
 
     String s4(s3);
-    std::cout << "(copy of): ";
-    s4.output();
+    cout << "s4 (copy of s3): "; s4.output();
+
+    cout << "Objects created: " << String::getCount() << endl;
 }
