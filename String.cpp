@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cstring>
 
 using namespace std;
@@ -27,6 +27,14 @@ public:
         : length(other.length), str(new char[other.length + 1]) {
         strcpy_s(str, length + 1, other.str);
         ++count;
+    }
+
+    String(String&& other) noexcept
+        : str(other.str), length(other.length) {
+        other.str = nullptr;
+        other.length = 0;
+        ++count;
+        cout << "[Move constructor called]" << endl;
     }
 
     void input() {
@@ -72,6 +80,12 @@ int main() {
 
     String s4(s3);
     cout << "s4 (copy of s3): "; s4.output();
+
+    cout << "Objects created: " << String::getCount() << endl;
+
+    String s5(std::move(s3));
+    cout << "s5 (moved from s3): "; s5.output();
+    cout << "s3 (after move): "; s3.output();
 
     cout << "Objects created: " << String::getCount() << endl;
 }
